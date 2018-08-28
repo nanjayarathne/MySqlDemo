@@ -1,0 +1,80 @@
+// begin form with action
+@foreach (var item in Model)
+{
+    using (Html.BeginForm("Delete", "Employee", new { id = item.ID }))
+    {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Gender)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.City)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.DateOfBirth)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
+            <input type="submit" value="Delete" />
+        </td>
+    </tr>
+    }
+}
+
+//=========================================================================================
+ // set model metadata
+[MetadataType(typeof(EmployeeMetaData))]
+    public partial class Employee
+    {
+    }
+
+    public class EmployeeMetaData
+    {
+        [Required]
+        public string Name { get; set; }
+
+        [Required]
+        public string Gender { get; set; }
+
+        [Required]
+        public string City { get; set; }
+
+        [Required]
+        [Display(Name="Department")]
+        public int DepartmentId { get; set; }
+    }
+
+//===========================================================================================
+//inline dropdown
+@Html.DropDownList("Gender", new List<SelectListItem>
+{
+new SelectListItem { Text = "Male", Value="Male" },
+new SelectListItem { Text = "Female", Value="Female" }
+}, "Select Gender") 
+
+
+//============================================================================================
+//model bind drop down
+ViewBag.Departments = new SelectList(db.Departments, "Id", "Name");
+//html
+@Html.DropDownList("Departments", "Select Department") 
+
+//default selected
+List<SelectListItem> selectListItems = new List<SelectListItem>();
+
+    foreach (Department department in db.Departments)
+    {
+        SelectListItem selectListItem = new SelectListItem
+        {
+            Text = department.Name,
+            Value = department.Id.ToString(),
+            Selected = department.IsSelected.HasValue ? department.IsSelected.Value : false
+        };
+        selectListItems.Add(selectListItem);
+    }
+
+    ViewBag.Departments = selectListItems;
+    return View();
